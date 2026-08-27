@@ -7,8 +7,6 @@ const { requireAdmin } = require('../middleware/require-admin');
 
 const router = express.Router();
 
-router.use(requireAdmin);
-
 function toCountryResponse(country) {
   return {
     code: country.code,
@@ -32,7 +30,7 @@ function sendDatabaseError(response, error) {
   return response.status(500).json({ error: 'Internal server error.' });
 }
 
-router.post('/', async (request, response) => {
+router.post('/', requireAdmin, async (request, response) => {
   try {
     const country = await Country.create({
       code: request.body.code,
@@ -60,7 +58,7 @@ router.get('/:code', async (request, response) => {
   return response.json(toCountryResponse(country));
 });
 
-router.put('/:code', async (request, response) => {
+router.put('/:code', requireAdmin, async (request, response) => {
   try {
     const country = await Country.findOneAndUpdate(
       { code: getCode(request.params.code) },
@@ -81,7 +79,7 @@ router.put('/:code', async (request, response) => {
   }
 });
 
-router.delete('/:code', async (request, response) => {
+router.delete('/:code', requireAdmin, async (request, response) => {
   const country = await Country.findOne({ code: getCode(request.params.code) });
 
   if (!country) {
