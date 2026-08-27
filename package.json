@@ -1,0 +1,25 @@
+{
+  "name": "arabian-horse-pedigree-api",
+  "version": "1.0.0",
+  "description": "REST API for an Arabian horse pedigree database",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mrkvqv/arabian-horse-pedigree-api.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/mrkvqv/arabian-horse-pedigree-api/issues"
+  },
+  "homepage": "https://github.com/mrkvqv/arabian-horse-pedigree-api#readme",
+  "dependencies": {
+    "express": "^5.2.1"
+  }
+}
