@@ -3,9 +3,12 @@ require('dotenv').config({ quiet: true });
 
 const { connectToDatabase } = require('./config/database');
 const { requireAdmin } = require('./middleware/require-admin');
+const countryRoutes = require('./routes/countries');
 
 const app = express();
 const port = process.env.PORT || 3000;
+
+app.use(express.json());
 
 app.get('/health', (request, response) => {
   response.status(200).json({ status: 'ok' });
@@ -14,6 +17,8 @@ app.get('/health', (request, response) => {
 app.get('/admin/health', requireAdmin, (request, response) => {
   response.status(200).json({ status: 'ok', admin: request.admin.login });
 });
+
+app.use('/countries', countryRoutes);
 
 async function startServer() {
   await connectToDatabase();
