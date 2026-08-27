@@ -2,6 +2,15 @@
 
 REST API for an Arabian horse pedigree database.
 
+## Public identifiers
+
+The API will not expose or accept MongoDB `ObjectId` values.
+
+- A horse is identified as `name countryCode birthYear`, for example `Amir PL 2020`.
+- A breeder is identified as `name countryCode`, for example `Al Buraq PL`.
+
+These are display and API identifiers created from regular fields. They are not stored as separate technical keys in MongoDB.
+
 ## Requirements
 
 - Node.js 24 or newer

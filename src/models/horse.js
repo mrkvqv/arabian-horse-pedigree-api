@@ -49,4 +49,7 @@ const horseSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
+// A horse is uniquely identified by its name, country of birth, and birth year.
+horseSchema.index({ name: 1, countryOfBirth: 1, birthYear: 1 }, { unique: true });
+
 module.exports = mongoose.model('Horse', horseSchema);
