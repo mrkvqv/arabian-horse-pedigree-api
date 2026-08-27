@@ -4,6 +4,7 @@ require('dotenv').config({ quiet: true });
 const { connectToDatabase } = require('./config/database');
 const { requireAdmin } = require('./middleware/require-admin');
 const countryRoutes = require('./routes/countries');
+const breederRoutes = require('./routes/breeders');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -19,6 +20,7 @@ app.get('/admin/health', requireAdmin, (request, response) => {
 });
 
 app.use('/countries', countryRoutes);
+app.use('/breeders', breederRoutes);
 
 async function startServer() {
   await connectToDatabase();
