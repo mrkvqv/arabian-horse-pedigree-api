@@ -48,6 +48,22 @@ npm start
 
 The server connects to MongoDB first and then starts at `http://localhost:3000`.
 
+## Administrator authentication
+
+Set `ADMIN_LOGIN` and `ADMIN_PASSWORD` in your local `.env` file, then create the first administrator:
+
+```bash
+npm run create:admin
+```
+
+Protected API routes use HTTP Basic Auth. For example, after starting the API:
+
+```bash
+curl -u admin:your-admin-password http://localhost:3000/admin/health
+```
+
+The password is stored in MongoDB only as a hash. Basic Auth is appropriate here for local development and the exam project; a production application must use HTTPS.
+
 ## Stop MongoDB
 
 ```bash
