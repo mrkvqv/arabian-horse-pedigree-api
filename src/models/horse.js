@@ -76,6 +76,79 @@ horseSchema.pre('validate', async function validateReferences() {
   }
 });
 
+horseSchema.pre('validate', async function validatePedigreeRules() {
+  if (this.mother && this.father && String(this.mother) === String(this.father)) {
+    this.invalidate('father', 'Mother and father must be different horses.');
+  }
+
+  const [mother, father] = await Promise.all([
+    this.mother ? this.constructor.findById(this.mother).select('sex birthYear') : null,
+    this.father ? this.constructor.findById(this.father).select('sex birthYear') : null,
+  ]);
+
+  if (this.mother && (await hasCurrentHorseAsAncestor(this, this.mother))) {
+    this.invalidate('mother', 'Mother cannot be this horse or its descendant.');
+  }
+
+  if (this.father && (await hasCurrentHorseAsAncestor(this, this.father))) {
+    this.invalidate('father', 'Father cannot be this horse or its descendant.');
+  }
+
+  validateParent(this, mother, 'mother', 'klacz');
+  validateParent(this, father, 'father', 'ogier');
+});
+
+function validateParent(horse, parent, fieldName, expectedSex) {
+  if (!parent) {
+    return;
+  }
+
+  if (parent.sex !== expectedSex) {
+    horse.invalidate(fieldName, `${fieldName} must reference a ${expectedSex}.`);
+  }
+
+  const parentAgeAtBirth = horse.birthYear - parent.birthYear;
+
+  if (parentAgeAtBirth < 3 || parentAgeAtBirth > 21) {
+    horse.invalidate(fieldName, `${fieldName} must be between 3 and 21 years old at birth.`);
+  }
+}
+
+async function hasCurrentHorseAsAncestor(horse, parentId) {
+  const pendingIds = [parentId];
+  const visitedIds = new Set();
+
+  while (pendingIds.length > 0) {
+    const currentId = pendingIds.pop();
+    const currentIdString = String(currentId);
+
+    if (currentIdString === String(horse._id)) {
+      return true;
+    }
+
+    if (visitedIds.has(currentIdString)) {
+      continue;
+    }
+
+    visitedIds.add(currentIdString);
+
+    const currentHorse = await horse.constructor
+      .findById(currentId)
+      .select('mother father')
+      .lean();
+
+    if (currentHorse?.mother) {
+      pendingIds.push(currentHorse.mother);
+    }
+
+    if (currentHorse?.father) {
+      pendingIds.push(currentHorse.father);
+    }
+  }
+
+  return false;
+}
+
 // A horse is uniquely identified by its name, country of birth, and birth year
 horseSchema.index({ name: 1, countryOfBirth: 1, birthYear: 1 }, { unique: true });
 
