@@ -51,6 +51,7 @@ const horseSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
+//
 horseSchema.pre('validate', async function validateReferences() {
   const [countryExists, breederExists, motherExists, fatherExists] = await Promise.all([
     this.countryOfBirth ? Country.exists({ _id: this.countryOfBirth }) : true,
@@ -76,6 +77,7 @@ horseSchema.pre('validate', async function validateReferences() {
   }
 });
 
+//
 horseSchema.pre('validate', async function validatePedigreeRules() {
   if (this.mother && this.father && String(this.mother) === String(this.father)) {
     this.invalidate('father', 'Mother and father must be different horses.');
