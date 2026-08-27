@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/mrkvqv/arabian-horse-pedigree-api#readme",
   "dependencies": {
+    "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "mongoose": "^9.9.4"
   }

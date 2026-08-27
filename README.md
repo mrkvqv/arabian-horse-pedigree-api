@@ -38,6 +38,16 @@ These are display and API identifiers created from regular fields. They are not 
    docker compose ps
    ```
 
+## Start the API
+
+MongoDB must be running before the API starts.
+
+```bash
+npm start
+```
+
+The server connects to MongoDB first and then starts at `http://localhost:3000`.
+
 ## Stop MongoDB
 
 ```bash
