@@ -26,6 +26,8 @@
     "bcryptjs": "^3.0.3",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
-    "mongoose": "^9.9.4"
+    "mongoose": "^9.9.4",
+    "passport": "^0.7.0",
+    "passport-http": "^0.3.0"
   }
 }
