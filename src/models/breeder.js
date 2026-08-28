@@ -33,7 +33,6 @@ breederSchema.pre('validate', async function validateCountryReference() {
   }
 });
 
-// A breeder is uniquely identified by its name and country of activity.
 breederSchema.index({ name: 1, country: 1 }, { unique: true });
 
 module.exports = mongoose.model('Breeder', breederSchema);

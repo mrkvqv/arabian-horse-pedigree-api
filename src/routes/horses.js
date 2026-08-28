@@ -35,6 +35,47 @@ function horseReference(horse) {
   };
 }
 
+function pedigreeNode(horse) {
+  const code = horse.countryOfBirth.code;
+  return {
+    identifier: formatHorseIdentifier({ name: horse.name, countryCode: code, birthYear: horse.birthYear }),
+    name: horse.name,
+    birthYear: horse.birthYear,
+    sex: horse.sex,
+    countryCode: code,
+    mother: null,
+    father: null,
+  };
+}
+
+function parseDepth(value) {
+  if (value === undefined) return 3;
+  const depth = Number(value);
+  if (!Number.isInteger(depth) || depth < 0 || depth > 10) {
+    return problem(400, 'depth must be an integer between 0 and 10.');
+  }
+  return depth;
+}
+
+async function buildPedigree(horse, depth) {
+  const node = pedigreeNode(horse);
+  if (depth === 0) return node;
+
+  const [mother, father] = await Promise.all([
+    horse.mother ? Horse.findById(horse.mother._id || horse.mother).populate('countryOfBirth', 'code') : null,
+    horse.father ? Horse.findById(horse.father._id || horse.father).populate('countryOfBirth', 'code') : null,
+  ]);
+
+  const [motherTree, fatherTree] = await Promise.all([
+    mother ? buildPedigree(mother, depth - 1) : null,
+    father ? buildPedigree(father, depth - 1) : null,
+  ]);
+
+  node.mother = motherTree;
+  node.father = fatherTree;
+  return node;
+}
+
 function toHorseResponse(horse) {
   const code = horse.countryOfBirth.code;
   const breederCode = horse.breeder.country.code;
@@ -139,6 +180,16 @@ router.post('/', async (request, response) => {
 router.get('/', async (request, response) => {
   const horses = await Horse.find().populate(population).sort({ name: 1, birthYear: 1 });
   return response.json(horses.map(toHorseResponse));
+});
+
+router.get('/:name/pedigree', async (request, response) => {
+  const horse = await findHorse({ name: request.params.name, birthYear: request.query.birthYear, countryCode: request.query.countryCode });
+  if (horse.status) return sendProblem(response, horse);
+
+  const depth = parseDepth(request.query.depth);
+  if (depth.status) return sendProblem(response, depth);
+
+  return response.json({ depth, horse: await buildPedigree(horse, depth) });
 });
 
 router.get('/:name', async (request, response) => {

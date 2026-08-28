@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 
-// database adres from .env
 async function connectToDatabase() {
   const databaseUri = process.env.MONGODB_URI;
 
