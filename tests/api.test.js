@@ -54,12 +54,14 @@ test.after(async () => {
 });
 
 test('API authentication, country CRUD, validation, pedigree, and offspring', async (t) => {
-  await t.test('keeps reads public and protects changes', async () => {
+  await t.test('protects country data and changes', async () => {
     const countries = await request('GET', '/countries');
+    const authorizedCountries = await request('GET', '/countries', undefined, true);
     const unauthorized = await request('POST', '/countries', { code: 'PL', namePl: 'Polska' });
 
-    assert.equal(countries.status, 200);
-    assert.deepEqual(countries.body, []);
+    assert.equal(countries.status, 401);
+    assert.equal(authorizedCountries.status, 200);
+    assert.deepEqual(authorizedCountries.body, []);
     assert.equal(unauthorized.status, 401);
   });
 
