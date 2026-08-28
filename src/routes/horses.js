@@ -192,6 +192,31 @@ router.get('/:name/pedigree', async (request, response) => {
   return response.json({ depth, horse: await buildPedigree(horse, depth) });
 });
 
+router.get('/:name/offspring', async (request, response) => {
+  const horse = await findHorse({ name: request.params.name, birthYear: request.query.birthYear, countryCode: request.query.countryCode });
+  if (horse.status) return sendProblem(response, horse);
+
+  const filter = { $or: [{ mother: horse._id }, { father: horse._id }] };
+
+  if (request.query.sex) {
+    if (!['klacz', 'ogier', 'wałach'].includes(request.query.sex)) {
+      return response.status(400).json({ error: 'sex must be klacz, ogier, or wałach.' });
+    }
+    filter.sex = request.query.sex;
+  }
+
+  if (request.query.breederName) {
+    const breeder = await findBreeder({ name: request.query.breederName, countryCode: request.query.breederCountryCode });
+    if (breeder.status) return sendProblem(response, breeder);
+    filter.breeder = breeder._id;
+  } else if (request.query.breederCountryCode) {
+    return response.status(400).json({ error: 'breederName is required when breederCountryCode is provided.' });
+  }
+
+  const offspring = await Horse.find(filter).populate(population).sort({ birthYear: 1, name: 1 });
+  return response.json(offspring.map(toHorseResponse));
+});
+
 router.get('/:name', async (request, response) => {
   const horse = await findHorse({ name: request.params.name, birthYear: request.query.birthYear, countryCode: request.query.countryCode });
   if (horse.status) return sendProblem(response, horse);
