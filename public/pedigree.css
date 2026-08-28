@@ -74,16 +74,25 @@ button {
   color: #9b1c1c;
 }
 
-.subtree {
+.generation {
   margin-top: 22px;
-  padding-left: 16px;
-  border-left: 2px solid #c9b9a8;
+  padding: 16px;
+  background: #ece5da;
+  border-radius: 8px;
 }
 
-.horse,
-.unknown {
-  display: inline-block;
-  min-width: 210px;
+.generation h2 {
+  margin-bottom: 12px;
+}
+
+.generation-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 12px;
+}
+
+.horse {
+  min-width: 0;
   padding: 12px;
   background: white;
   border-radius: 8px;
@@ -101,23 +110,9 @@ button {
   color: #5e564f;
 }
 
-.parents {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(220px, 1fr));
-  gap: 20px;
-}
-
-.parent-title {
-  margin: 12px 0 0;
+.relationship {
+  margin: 0 0 8px;
+  font-size: 13px;
   font-weight: bold;
-}
-
-.unknown {
-  color: #6e6257;
-}
-
-@media (max-width: 600px) {
-  .parents {
-    grid-template-columns: 1fr;
-  }
+  color: #5b3924;
 }
