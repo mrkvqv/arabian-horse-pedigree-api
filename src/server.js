@@ -27,6 +27,15 @@ app.use('/countries', countryRoutes);
 app.use('/breeders', breederRoutes);
 app.use('/horses', horseRoutes);
 
+app.use((request, response) => {
+  response.status(404).json({ error: 'Not found.' });
+});
+
+app.use((error, request, response, next) => {
+  if (response.headersSent) return next(error);
+  return response.status(500).json({ error: 'Internal server error.' });
+});
+
 async function startServer() {
   await connectToDatabase();
 
