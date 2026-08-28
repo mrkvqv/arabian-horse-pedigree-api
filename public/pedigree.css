@@ -1,0 +1,123 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: #f4f1ea;
+  color: #27231f;
+  font-family: Arial, sans-serif;
+}
+
+main {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 32px 20px;
+}
+
+h1 {
+  margin-top: 0;
+}
+
+form {
+  display: grid;
+  gap: 16px;
+  padding: 16px;
+  background: white;
+  border-radius: 8px;
+}
+
+.form-section {
+  padding: 14px;
+  border: 1px solid #ddd4c8;
+  border-radius: 6px;
+}
+
+.administrator-section {
+  background: #faf7f2;
+}
+
+h2 {
+  margin: 0 0 12px;
+  font-size: 18px;
+}
+
+.fields {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 12px;
+}
+
+label {
+  display: grid;
+  gap: 5px;
+  font-size: 14px;
+}
+
+input,
+button {
+  padding: 9px;
+  border: 1px solid #b8b0a5;
+  border-radius: 4px;
+  font: inherit;
+}
+
+button {
+  justify-self: start;
+  background: #5b3924;
+  color: white;
+  cursor: pointer;
+}
+
+#message {
+  min-height: 24px;
+  color: #9b1c1c;
+}
+
+.subtree {
+  margin-top: 22px;
+  padding-left: 16px;
+  border-left: 2px solid #c9b9a8;
+}
+
+.horse,
+.unknown {
+  display: inline-block;
+  min-width: 210px;
+  padding: 12px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px #0002;
+}
+
+.horse strong,
+.horse span {
+  display: block;
+}
+
+.horse span {
+  margin-top: 4px;
+  font-size: 14px;
+  color: #5e564f;
+}
+
+.parents {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(220px, 1fr));
+  gap: 20px;
+}
+
+.parent-title {
+  margin: 12px 0 0;
+  font-weight: bold;
+}
+
+.unknown {
+  color: #6e6257;
+}
+
+@media (max-width: 600px) {
+  .parents {
+    grid-template-columns: 1fr;
+  }
+}

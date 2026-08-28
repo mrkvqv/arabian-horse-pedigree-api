@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="pl">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rodowód konia arabskiego</title>
+    <link rel="stylesheet" href="pedigree.css">
+  </head>
+  <body>
+    <main>
+      <h1>Rodowód konia arabskiego</h1>
+
+      <form id="pedigree-form">
+        <section class="form-section">
+          <h2>Dane konia</h2>
+          <div class="fields">
+            <label>
+              Imię konia
+              <input id="name" required>
+            </label>
+            <label>
+              Rok urodzenia
+              <input id="birth-year" type="number" min="1" required>
+            </label>
+            <label>
+              Kod kraju
+              <input id="country-code" maxlength="2" placeholder="PL" required>
+            </label>
+            <label>
+              Liczba pokoleń
+              <input id="depth" type="number" min="0" max="10" value="3" required>
+            </label>
+          </div>
+        </section>
+
+        <section class="form-section administrator-section">
+          <h2>Dane administratora</h2>
+          <div class="fields">
+            <label>
+              Login
+              <input id="login" required>
+            </label>
+            <label>
+              Hasło
+              <input id="password" type="password" required>
+            </label>
+          </div>
+        </section>
+
+        <button type="submit">Pokaż rodowód</button>
+      </form>
+
+      <p id="message" role="alert"></p>
+      <section id="tree"></section>
+    </main>
+
+    <script src="pedigree.js"></script>
+  </body>
+</html>
