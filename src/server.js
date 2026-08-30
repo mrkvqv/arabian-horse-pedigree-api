@@ -51,4 +51,5 @@ if (require.main === module) {
   });
 }
 
+// importujemy app innym plikom projektu
 module.exports = { app, startServer };
