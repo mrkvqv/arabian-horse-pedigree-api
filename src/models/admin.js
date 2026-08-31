@@ -17,4 +17,5 @@ const adminSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
+// tworzymy model Admin i udostępniamy unnym plikom
 module.exports = mongoose.model('Admin', adminSchema);

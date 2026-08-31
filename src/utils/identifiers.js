@@ -1,9 +1,12 @@
+// funkcje pomocnicze
+
+// sprawdzamy imię konia
 function requireText(value, fieldName) {
-  if (typeof value !== 'string' || value.trim() === '') {
+  if (typeof value !== 'string' || value.trim() === '') { // czy jest tekstem i czy nie jest puste
     throw new Error(`${fieldName} must be a non-empty string.`);
   }
 
-  return value.trim();
+  return value.trim(); // zwracamy oczyszczony tekst
 }
 
 function formatCountryCode(countryCode) {
@@ -21,11 +24,11 @@ function formatHorseIdentifier({ name, countryCode, birthYear }) {
     throw new Error('birthYear must be a positive integer.');
   }
 
-  return `${requireText(name, 'name')} ${formatCountryCode(countryCode)} ${birthYear}`;
+  return `${requireText(name, 'name')} ${formatCountryCode(countryCode)} ${birthYear}`; // indefikator konia
 }
 
 function formatBreederIdentifier({ name, countryCode }) {
-  return `${requireText(name, 'name')} ${formatCountryCode(countryCode)}`;
+  return `${requireText(name, 'name')} ${formatCountryCode(countryCode)}`; // indeficator hodowcy
 }
 
 module.exports = {

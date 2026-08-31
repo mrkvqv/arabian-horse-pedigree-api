@@ -16,7 +16,9 @@ const countrySchema = new mongoose.Schema(
       trim: true,
     },
   },
+  // pola createdAt i updatedAt
   { timestamps: true },
 );
 
+// tworzymy model Country i udostępniamy unnym plikom
 module.exports = mongoose.model('Country', countrySchema);

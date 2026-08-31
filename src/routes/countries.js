@@ -4,11 +4,12 @@ const Country = require('../models/country');
 const Breeder = require('../models/breeder');
 const Horse = require('../models/horse');
 const { requireAdmin } = require('../middleware/require-admin');
-
+// osobny, uporządkowany zestaw tras dotyczących tylko krajów
 const router = express.Router();
-
+// przed każdym endpointem uruchomiamy requireAdmin
 router.use(requireAdmin);
 
+// co zwracamy
 function toCountryResponse(country) {
   return {
     code: country.code,
@@ -16,16 +17,19 @@ function toCountryResponse(country) {
   };
 }
 
+// zwraca kod kraju dużymi literami i nez spacji
 function getCode(code) {
   return code.trim().toUpperCase();
 }
 
+// obsługa blędów
 function sendDatabaseError(response, error) {
+  // bad request
   if (error.name === 'ValidationError') {
     return response.status(400).json({ error: error.message });
   }
 
-  if (error.code === 11000) {
+  if (error.code === 11000) { // bląd duplikatu
     return response.status(409).json({ error: 'A country with this code already exists.' });
   }
 
@@ -34,11 +38,11 @@ function sendDatabaseError(response, error) {
 
 router.post('/', async (request, response) => {
   try {
+    // mongoose robi kraj i sprawdza regułu countries.js
     const country = await Country.create({
       code: request.body.code,
       namePl: request.body.namePl,
     });
-
     return response.status(201).json(toCountryResponse(country));
   } catch (error) {
     return sendDatabaseError(response, error);
@@ -47,7 +51,7 @@ router.post('/', async (request, response) => {
 
 router.get('/', async (request, response) => {
   const countries = await Country.find().sort({ code: 1 });
-  return response.json(countries.map(toCountryResponse));
+  return response.json(countries.map(toCountryResponse)); // map idzie po każdemu elementowi tablicy i robi nową
 });
 
 router.get('/:code', async (request, response) => {

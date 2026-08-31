@@ -1,6 +1,6 @@
 require('dotenv').config({ quiet: true });
 
-const assert = require('node:assert/strict');
+const assert = require('node:assert/strict'); // mechanizm tworzenia testów
 const http = require('node:http');
 const test = require('node:test');
 const bcrypt = require('bcryptjs');
@@ -20,7 +20,7 @@ const Horse = require('../src/models/horse');
 
 let server;
 
-// wysyła żądanie HTTP do uruchomionego serwera testowego
+// wysyła żądanie HTTP do uruchomionego serwera testowego (jak postman)
 function request(method, path, body, authenticated = false) {
   // zamienia dane JavaScript na tekst JSON, który można wysłać w body
   const payload = body ? JSON.stringify(body) : undefined;
@@ -134,21 +134,25 @@ test('API authentication, country CRUD, validation, pedigree, and offspring', as
       breeder: breeder._id, father: father._id,
     });
 
-    // pobieramy rodziców pierwszego dziecka i tylko klacze w potomstwie ojca
+    // pobieramy rodziców, klacze z pierwszego pokolenia i tylko klacze w potomstwie ojca
     const pedigree = await request('GET', '/horses/Child%20one/pedigree?birthYear=2010&countryCode=PL&depth=1', undefined, true);
+    const ancestors = await request('GET', '/horses/Child%20one/ancestors?birthYear=2010&countryCode=PL&generation=1&sex=klacz', undefined, true);
     const offspring = await request('GET', '/horses/Father/offspring?birthYear=1997&countryCode=PL&sex=klacz', undefined, true);
 
     // sprawdzamy, czy odpowiedzi zawierają oczekiwane konie
     assert.equal(pedigree.status, 200);
     assert.equal(pedigree.body.horse.mother.name, 'Mother');
     assert.equal(pedigree.body.horse.father.name, 'Father');
+    assert.equal(ancestors.status, 200);
+    assert.equal(ancestors.body.generation, 1);
+    assert.deepEqual(ancestors.body.horses.map((horse) => horse.name), ['Mother']);
     assert.equal(offspring.status, 200);
     assert.equal(offspring.body.length, 1);
     assert.equal(offspring.body[0].name, 'Child two');
   });
 
   await t.test('returns JSON for an unknown route', async () => {
-    // nawet nieistniejący adres powinien zwrócić uporządkowany błąd JSON
+    // nieistniejący adres powinien zwrócić uporządkowany błąd JSON
     const response = await request('GET', '/unknown-route');
 
     assert.equal(response.status, 404);

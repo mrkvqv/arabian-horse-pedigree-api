@@ -4,6 +4,7 @@ const Breeder = require('../models/breeder');
 const Country = require('../models/country');
 const Horse = require('../models/horse');
 const { requireAdmin } = require('../middleware/require-admin');
+// tworzymy imię + kraj
 const { formatBreederIdentifier } = require('../utils/identifiers');
 
 const router = express.Router();
@@ -14,6 +15,7 @@ function getCountryCode(code) {
   return code.trim().toUpperCase();
 }
 
+// to co zwracamy
 function toBreederResponse(breeder) {
   return {
     identifier: formatBreederIdentifier({
@@ -27,11 +29,12 @@ function toBreederResponse(breeder) {
 }
 
 function sendDatabaseError(response, error) {
+  // bad request
   if (error.name === 'ValidationError') {
     return response.status(400).json({ error: error.message });
   }
 
-  if (error.code === 11000) {
+  if (error.code === 11000) { // bląd duplikatu
     return response.status(409).json({ error: 'A breeder with this name and country already exists.' });
   }
 
@@ -60,6 +63,7 @@ async function findBreeder(name, countryCode) {
   return { breeder: breeders[0] || null };
 }
 
+// obsługa blędów wyszukiwania
 function sendBreederLookupError(response, lookup) {
   if (lookup.ambiguous) {
     return response.status(409).json({ error: 'Breeder name is ambiguous. Add countryCode.' });
@@ -123,11 +127,13 @@ router.put('/:name', async (request, response) => {
     if (!country) {
       return response.status(404).json({ error: 'Country not found.' });
     }
-
+    //zmieniamy name, id i (notes)
     lookup.breeder.name = request.body.name;
     lookup.breeder.country = country._id;
     lookup.breeder.notes = request.body.notes;
-    await lookup.breeder.save();
+    // sapisujemu zmienionego hodowcę do bazy
+    await lookup.breeder.save(); // uruchamia walidację modelu
+    // zwracamy odpowiedź API z kodem kraju
     await lookup.breeder.populate('country', 'code');
 
     return response.json(toBreederResponse(lookup.breeder));

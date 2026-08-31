@@ -142,6 +142,7 @@ All endpoints below require Basic Auth unless marked **Public**.
 | PUT | `/horses/:name?birthYear=2020&countryCode=PL` | Updates a horse. |
 | DELETE | `/horses/:name?birthYear=2020&countryCode=PL` | Deletes a horse that is not a parent. |
 | GET | `/horses/:name/pedigree?birthYear=2020&countryCode=PL&depth=3` | Gets an ancestor tree. |
+| GET | `/horses/:name/ancestors?birthYear=2020&countryCode=PL&generation=2&sex=klacz` | Gets horses from one ancestor generation filtered by sex. Generation 1 means parents. |
 | GET | `/horses/:name/offspring?birthYear=2020&countryCode=PL&sex=klacz&breederName=Al%20Buraq&breederCountryCode=PL` | Gets offspring with optional sex and breeder filters. |
 
 ### Create a country
