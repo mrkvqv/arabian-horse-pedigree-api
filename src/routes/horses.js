@@ -103,21 +103,24 @@ async function buildPedigree(horse, depth) {
 
 
 // potomek ze wskazanego pokolenia
-async function ancestorsAtGeneration(horse, generation) {
+async function descendantAtGeneration(horse, generation) {
   // dotarliśmy do potrzebnego pokolenia i zwracamy aktualnego konia
   if (generation === 0)
-  return [horse];
+    return [horse];
 
   // pobrac potomstwo
-  const [mother, father] = await Promise.all([
-    horse.mother ? Horse.findById(horse.mother._id || horse.mother).populate(population) : null,
-    horse.father ? Horse.findById(horse.father._id || horse.father).populate(population) : null,
-  ]);
+  const children = await Horse.find({
+    $or: [
+    { mother: horse._id },
+    { father: horse._id },
+    ],
+}).populate(population);
 
-  const [motherAncestors, fatherAncestors] = await Promise.all([
-    mother ? ancestorsAtGeneration(mother, generation - 1) : [],
-    father ? ancestorsAtGeneration(father, generation - 1) : [],
-  ]);
+  const descendantGroups = await Promise.all(
+      children.map((child) => descendantAtGeneration(child, generation - 1)),
+    );
+
+    return descendantGroups.flat();
 }
 
 // przygotowujemy czytelną odpowiedź API zamiast technicznych ObjectId
@@ -139,6 +142,18 @@ function toHorseResponse(horse) {
     mother: horseReference(horse.mother),
     father: horseReference(horse.father),
     notes: horse.notes,
+  };
+}
+
+function toShortHorseResponse(horse) {
+  const code = horse.countryOfBirth.code;
+  return {
+    identifier: formatHorseIdentifier({ name: horse.name, countryCode: code, birthYear: horse.birthYear }),
+    name: horse.name,
+    birthYear: horse.birthYear,
+    sex: horse.sex,
+    coat: horse.coat,
+    countryCode: code,
   };
 }
 
@@ -255,7 +270,7 @@ router.get('/:name/pedigree', async (request, response) => {
   return response.json({ depth, horse: await buildPedigree(horse, depth) });
 });
 
-router.get('/:name/ancestors', async (request, response) => {
+router.get('/:name/descendants', async (request, response) => {
   // znajdujemy konia, od którego zaczynamy przechodzenie
   const horse = await findHorse({ name: request.params.name, birthYear: request.query.birthYear, countryCode: request.query.countryCode });
   if (horse.status) return sendProblem(response, horse);
@@ -267,8 +282,8 @@ router.get('/:name/ancestors', async (request, response) => {
   if (sex.status) return sendProblem(response, sex);
 
   //  dane pokolenia i zostawiamy tylko konie wybranej płci
-  const ancestors = await ancestorsAtGeneration(horse, generation);
-  const horses = ancestors.filter((ancestor) => ancestor.sex === sex).map(toHorseResponse);
+  const descendants = await descendantAtGeneration(horse, generation);
+  const horses = descendants.filter((descendant) => descendant.sex === sex).map(toShortHorseResponse);
 
   // zwracamy parametry wyszukiwania oraz gotową listę koni
   return response.json({ generation, sex, horses });
